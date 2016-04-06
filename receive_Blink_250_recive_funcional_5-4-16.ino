@@ -57,8 +57,7 @@ START_INIT:
     else
     {
         Serial.println("CAN BUS Shield init fail");
-        Serial.println("Init CAN BUS Shield again");
-         digitalWrite(LED,true);
+           digitalWrite(LED,true);
            delay(200);
            digitalWrite(LED,false);
            delay(200);
@@ -92,8 +91,8 @@ void loop()
            MsgLeido[2]=buf[2];
            MsgLeido[1]=buf[1];
            MsgLeido[0]=buf[0];
-           
-            if(  MsgLeido[00]==0xEE){
+
+           if( canId ==255){
          CAN.sendMsgBuf(ID_Hex,0,8,MsgUpOk);
           digitalWrite(LED,true);
           delay(200);
@@ -112,6 +111,7 @@ void loop()
           digitalWrite(LED,false);
         }
      
+           
        if(ID==canId){
       
            
