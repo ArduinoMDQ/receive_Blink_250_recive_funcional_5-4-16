@@ -11,10 +11,10 @@
 // the cs pin of the version after v1.1 is default to D9
 // v0.9b and v1.0 is default D10
 const int SPI_CS_PIN = 9;
-const int interrupcion = 8;
-const int LED=5;
-const int Relay_1=6;
-const int Relay_2=7;
+const int interrupcion = 5;
+const int LED=8;
+const int Relay_1=7;
+const int Relay_2=6;
 boolean ledON=1;
 //const int canId=127;
  unsigned char canId;
@@ -42,29 +42,41 @@ void setup()
     pinMode(Relay_1,OUTPUT);
     pinMode(Relay_2,OUTPUT);
     pinMode(interrupcion ,INPUT);
-    ID_Hex= EEPROM.read(0x00);
+    digitalWrite(Relay_1,HIGH);
+    digitalWrite(Relay_2,HIGH);
+   // ID_Hex= EEPROM.read(0x00);
+  
 
 START_INIT:
 
     if(CAN_OK == CAN.begin(CAN_250KBPS,MCP_8MHz))                 
     {      
           CAN.sendMsgBuf(ID_Hex,0,8,MsgUpOk);
-           digitalWrite(LED,true);
-           delay(100);
-           digitalWrite(LED,false);
-          
+         
+           digitalWrite(LED,HIGH);
+           delay(200);
+           digitalWrite(LED,LOW);
+           delay(200);
+            digitalWrite(LED,HIGH);
+           delay(200);
+           digitalWrite(LED,LOW);
+           delay(200);
     }
     else
     {
         Serial.println("CAN BUS Shield init fail");
-           digitalWrite(LED,true);
+           digitalWrite(LED,HIGH);
            delay(200);
-           digitalWrite(LED,false);
+           digitalWrite(LED,LOW);
            delay(200);
-           digitalWrite(LED,true);
+            digitalWrite(LED,HIGH);
            delay(200);
-           digitalWrite(LED,false);
-      
+           digitalWrite(LED,LOW);
+           delay(200);
+             digitalWrite(LED,HIGH);
+       delay(1000);
+          digitalWrite(LED,LOW);
+           delay(200);
         goto START_INIT;
     }
 }
@@ -77,9 +89,15 @@ void loop()
 
     if(!digitalRead(interrupcion))            // check if data coming
     
-    {    CAN.readMsgBuf(&len, buf);    // read data,  len: data length, buf: data buf
+    {    
+      digitalWrite(LED,HIGH);
+      delay(20);
+      digitalWrite(LED,LOW);
+      CAN.readMsgBuf(&len, buf);    // read data,  len: data length, buf: data buf
+      
          canId = CAN.getCanId();
          ID_Hex= EEPROM.read(0x00);
+          ID_Hex=0x80;
          int ID=int(ID_Hex);
          
       
@@ -91,6 +109,35 @@ void loop()
            MsgLeido[2]=buf[2];
            MsgLeido[1]=buf[1];
            MsgLeido[0]=buf[0];
+
+
+          /////////////////////////////////////7
+
+
+   if(  MsgLeido[2]==0x01){
+        
+          digitalWrite(LED,true);
+          digitalWrite(Relay_1,false);
+        
+       
+        
+        }else{
+        
+          digitalWrite(Relay_1,true);
+           digitalWrite(LED,false);
+          
+          }
+
+
+
+
+          ////////////////////////////////77
+
+
+
+
+
+
 
            if( canId ==255){
          CAN.sendMsgBuf(ID_Hex,0,8,MsgUpOk);
@@ -120,10 +167,10 @@ void loop()
         if(  MsgLeido[1]==0x01){
         
           digitalWrite(LED,true);
-          digitalWrite(Relay_1,true);
-          delay(1000);
           digitalWrite(Relay_1,false);
-          digitalWrite(LED,false);
+          delay(1000);
+          digitalWrite(Relay_1,true);
+           digitalWrite(LED,false);
        
             MsgUpEEprom[1]=ID_Hex;
            CAN.sendMsgBuf(canId,0,8,MsgUpEEprom);
@@ -132,24 +179,24 @@ void loop()
          digitalWrite(Relay_2,true);
           digitalWrite(LED,true);
           delay(200);
-          digitalWrite(LED,false);
+           digitalWrite(LED,false);
           delay(500);
-          digitalWrite(LED,true);
+           digitalWrite(LED,true);
           delay(200);
-          digitalWrite(LED,false);
+           digitalWrite(LED,false);
            digitalWrite(Relay_2,false);
         }
         
          if(MsgLeido[1]==0x03){
           digitalWrite(LED,true);
           delay(200);
-          digitalWrite(LED,false);
+           digitalWrite(LED,false);
           delay(200);
-          digitalWrite(LED,true);
+           digitalWrite(LED,true);
           delay(200);
-          digitalWrite(LED,false);
-          delay(200);
-          digitalWrite(LED,true);
+           digitalWrite(LED,false);
+           delay(200);
+           digitalWrite(LED,true);
           delay(200);
           digitalWrite(LED,false);
       
@@ -161,11 +208,11 @@ void loop()
            
         }
        }
+   
       }
         
     }
     
-
 
 /*********************************************************************************************************
   END FILE
